@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4664B267-25A8-4C86-91BA-E6F721856834}</ProjectGuid>
+    <ProjectGuid>{E7E93395-D8F1-4FC7-AED5-5A0FFF71CBA1}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CommandLine</RootNamespace>
-    <AssemblyName>CommandLine</AssemblyName>
+    <RootNamespace>ExitCode</RootNamespace>
+    <AssemblyName>ExitCode</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
