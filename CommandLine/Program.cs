@@ -9,7 +9,6 @@ namespace CommandLine
 			Console.ForegroundColor = ConsoleColor.DarkGray;
 			Console.WriteLine("CommandLine is:");
 
-			Console.WindowWidth = 100;
 			Console.ResetColor();
 
 			if (args?.Length == 0)
