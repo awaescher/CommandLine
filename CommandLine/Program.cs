@@ -1,66 +1,68 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CommandLine
 {
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine("CommandLine is:");
+	public class Program
+	{
+		static void Main(string[] args)
+		{
+			Console.ForegroundColor = ConsoleColor.DarkGray;
+			Console.WriteLine("CommandLine is:");
 
-            Console.ResetColor();
+			Console.WindowWidth = 100;
+			Console.ResetColor();
 
-			if (args == null || args.Length == 0)
+			if (args?.Length == 0)
 			{
-				Console.WriteLine("(EMPTY)");
+				Console.WriteLine("(empty)");
 			}
 			else
 			{
-				Console.WriteLine(string.Join(" ", args));
-				Console.WriteLine(string.Join(" ", GetLengthStrings(args)));
+				Console.Write("Index   ");
+				WriteColorizedLine(GetLegendString(LegendOrientation.Above, args, GetIndexes(args)));
+				Console.Write("        ");
+				WriteColorizedLine(args);
+				Console.Write("Lenght  ");
+				WriteColorizedLine(GetLegendString(LegendOrientation.Below, args, GetArgumentLengths(args)));
 			}
 
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine("");
-            Console.WriteLine("Press space to enter an exit code or any other key to quit.");
-            if (Console.ReadKey().Key == ConsoleKey.Spacebar)
-            {
-                int? exitCode = null;
+			Console.ForegroundColor = ConsoleColor.DarkGray;
+			Console.WriteLine("");
+			Console.WriteLine("Press any key to quit.");
+			Console.ReadKey();
+		}
 
-                while (exitCode == null)
-                {
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.WriteLine();
-                    Console.Write("Enter a numeric exit code: ");
-                    string number = Console.ReadLine();
-
-                    int parsed = -1;
-                    if (Int32.TryParse(number, out parsed))
-                    {
-                        exitCode = parsed;
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Could not parse \"" + number + "\" to a numeric exit code.");
-                    }
-                }
-
-                Environment.Exit(exitCode.GetValueOrDefault());
-            }
-        }
-
-		private static string[] GetLengthStrings(string[] args)
+		private static void WriteColorizedLine(string[] tokensToColorize)
 		{
-			var result = new string[args.Length];
+			var colorizer = new ConsoleColorizer();
 
-			for (int i = 0; i < args.Length; i++)
+			try
 			{
-				var length = args[i].Length;
+				for (int i = 0; i < tokensToColorize.Length; i++)
+				{
+					if (i > 0)
+						Console.Write(" ");
 
+					Console.ForegroundColor = colorizer.Next();
+					Console.Write(tokensToColorize[i]);
+				}
+				Console.WriteLine("");
+			}
+			finally
+			{
+				Console.ResetColor();
+			}
+		}
+
+		private static string[] GetLegendString(LegendOrientation orientation, string[] arguments, string[] labels)
+		{
+			var chars = orientation == LegendOrientation.Above ? "┌┬┐" : "└┴┘";
+
+			var result = new string[arguments.Length];
+
+			for (int i = 0; i < arguments.Length; i++)
+			{
+				var length = arguments[i].Length;
 
 				if (length == 0)
 				{
@@ -71,19 +73,41 @@ namespace CommandLine
 					result[i] = "".PadRight(length, '─');
 
 					if (length == 1)
-						result[i] = "^";
+						result[i] = chars[1].ToString();
 					else
-						result[i] = "└" + result[i].Substring(1, length - 2) + "┘";
+						result[i] = chars[0].ToString() + result[i].Substring(1, length - 2) + chars[2].ToString();
 
 					if (length > 3)
 					{
-						var lenghtStringLength = length.ToString().Length;
-						int charsLeftRight = (result[i].Length - lenghtStringLength) / 2;
-						int charsLeft = (charsLeftRight * 2 + lenghtStringLength == result[i].Length) ? charsLeftRight : charsLeftRight + 1;
-						result[i] = result[i].Substring(0, charsLeft) + length.ToString() + result[i].Substring(result[i].Length - charsLeftRight, charsLeftRight);
+						var label = labels[i];
+						int charsLeftRight = (result[i].Length - label.Length) / 2;
+						int charsLeft = (charsLeftRight * 2 + label.Length == result[i].Length) ? charsLeftRight : charsLeftRight + 1;
+						result[i] = result[i].Substring(0, charsLeft) + label + result[i].Substring(result[i].Length - charsLeftRight, charsLeftRight);
 					}
 				}
 			}
+
+			return result;
+		}
+
+		private static string[] GetIndexes(string[] args)
+		{
+			// what a pitty, we don't have Linq in .NET 2.0
+
+			var result = new string[args.Length];
+			for (int i = 0; i < args.Length; i++)
+				result[i] = i.ToString();
+
+			return result;
+		}
+
+		private static string[] GetArgumentLengths(string[] args)
+		{
+			// what a pitty, we don't have Linq in .NET 2.0
+
+			var result = new string[args.Length];
+			for (int i = 0; i < args.Length; i++)
+				result[i] = args[i].Length.ToString();
 
 			return result;
 		}
